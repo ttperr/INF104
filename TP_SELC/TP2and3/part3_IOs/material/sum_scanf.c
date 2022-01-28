@@ -1,21 +1,23 @@
-// This file is almost empty... We think you should be able to start from
-// scratch. Of course, you can reuse code you wrote in previous labs.
-
+#include <stdio.h>
 
 int main(int argc, char *argv[]) {
   /* To be completed */
+  int arg1, arg2;
 
-  // display a message to indicate what users should write
-  // use printf to do that
+  printf("Enter first number :\n");
+  int ret = scanf("%d", &arg1);
+  if (ret != 1) {
+    printf ("Error when reading input, make sure you write an integer value\n");
+    return -1;
+  }
 
-  // wait until users have provided you information
-  // use scanf to do that
+  printf ("Enter second number :\n");
+  ret = scanf("%d", &arg2);
+  if (ret != 1) {
+    printf ("Error when reading input, make sure you write an integer value\n");
+    return -1;
+  }
 
-  // check that information provided is an integer
-
-  // repeat previous steps to get a second integer
-
-  // compute the sum of integer values and display it
-
+  printf ("%d + %d = %d\n", arg1, arg2, arg1+arg2);
   return 0;
 }

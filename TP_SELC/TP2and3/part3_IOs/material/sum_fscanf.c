@@ -1,24 +1,38 @@
-// This file is almost empty... We think you should be able to start from
-// scratch. Of course, you can reuse code you wrote in previous labs.
+#include <stdio.h>
 
 
 int main(int argc, char *argv[]) {
-  /* To be completed */
+  
+  if(argc!=2) {
+    printf("Wrong usage : expected ./sum_fscanf file_name");
+    return -1;
+  }
 
-  // check that the user gave a correct number of parameters
-  // Usage: ./sum_fscanf file_name
+  FILE * f = fopen(argv[1], "rw");
+  if (f == NULL) {
+    printf("Errur lors de l'ouverture du fichier...!\n");
+    return -2;
+  }
 
-  // open file_name and retreive integer values it contains
-  // use fopen and fscanf to do that
+  int somme;
+  int arg1;
+  while(1) {
+    int ret = fscanf(f, "%d", &arg1);
+    if (ret == EOF) {
+      break;
+    }
+    if (ret == 1) {
+      somme += arg1;
+    }
+  }
+  printf ("Result : %d\n", somme);
+  
+  FILE * fres = fopen(argv[1], "rw");
+  if (fres == NULL) {
+    printf("Errur lors de l'ouverture du fichier...!\n");
+    return -3;
+  }
 
-  // check for the occurence of errors when using fopen and fscanf,
-  // display an error message and quit in case of errors.
-
-  // first variant: compute the sum of integer values and display it
-
-
-  // second variant: compute the sum of integer values and print it in 
-  // an output file
-
+  fprintf(fres, "%d\n", somme);
   return 0;
 }

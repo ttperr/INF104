@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include <string.h> 
 
 void display_message(char * message)
 {
@@ -8,40 +7,41 @@ void display_message(char * message)
 }
 
 char isCharInteger(char c);
+char stringToInteger(char * c);
 
 
 int main(int argc, char *argv[]) {
-  int op = 1;
   if(argc != 3) {
     display_message("Wrong usage, 2 parameters expected: ./sum param1 param2\n");
     return -1;
   } else {
-    int i;
-    for(i = 1; i < argc; i++) {
-      char * chaine = argv[i];
-      while(*chaine != '\0') {
-        if(*chaine == '-') {
-          op = -1;
-        } else if(!isCharInteger(*chaine)) {
-          display_message("Wrong usage, parameters param1 and param2 should be integers when executing ./sum param1 param2\n");
-          return -2;
-        }
-      chaine++;
+    char * chaine = argv[1]; 
+    while(*chaine != '\0') {
+      if(!isCharInteger(*chaine)) {
+        display_message("Wrong usage, parameter param1 should be integers when executing ./sum param1 param2\n");
+        return -2;
       }
+    chaine++;
     }
 
+    char * chaine2 = argv[1];
+    while(*chaine2 != '\0') {
+      if(!isCharInteger(*chaine2)) {
+        display_message("Wrong usage, parameter param2 should be integers when executing ./sum param1 param2\n");
+        return -2;
+      }
+    chaine2++;
+    }
   }
 
-  /* arguments have been checked, we can proceed to the sum:
-     1 - convert string into an integer value
-     2 - sum obtained values
-  */
+  int arg1 = stringToInteger(argv[1]);
+  int arg2 = stringToInteger(argv[2]);
 
+  printf ("Result : %d\n", arg1+arg2);
   return 0;
 }
 
-char isCharInteger(char c)
-{
+char isCharInteger(char c) {
   switch (c) {
     case '0' :
     case '1' :
@@ -58,8 +58,7 @@ char isCharInteger(char c)
   return 0;
 }
 
-char charToInteger(char c)
-{
+char charToInteger(char c) {
   switch (c) {
     case '0' :
       return 0;
@@ -82,16 +81,20 @@ char charToInteger(char c)
     case '9' :
       return 9;
   }
-  return 0;
+  return -1;
 }
 
-char stringToInteger(char * c)
-{ 
-  int exp = 0;
-  int s = 0;
-  while(*c != '\0') {
-    s += charToInteger(*c)*pow(10, exp);
-    exp++;
+char stringToInteger(char * c) { 
+  int signe = 1;
+  if (*c == '-') {
+    signe = -1;
+    c++;
   }
-  return 0;
+  char res = 0;
+  while(*c != '\0') {
+    char val = charToInteger(*c);
+    res = res * 10 + val;
+    c++;
+  }
+  return signe*res;
 }

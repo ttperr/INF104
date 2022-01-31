@@ -3,8 +3,7 @@
 int my_strcmp(char * str1, char * str2);
 void sort_string_array(char ** tab, int nb_of_elements);
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   // We initialize here a set of strings in order to test your implementation
   char * GoT_str1 = "Ned Stark";
   char * GoT_str2 = "Jon Snow";
@@ -25,24 +24,21 @@ int main(int argc, char *argv[])
 
   // we test strcmp with identical strings here
   int cmp = my_strcmp(GoT_str1, GoT_str1);
-  if(cmp!=0)
-  {
+  if(cmp!=0) {
     printf("Error: first test of strcmp failed\n");
     return -1;
   }
 
   // we test my_strcmp with str1 < str2
   cmp = my_strcmp(GoT_str2, GoT_str1);
-  if(cmp!=-1)
-  {
+  if(cmp!=-1) {
     printf("Error: second test of my_strcmp failed\n");
     return -2;
   }
 
   // we test my_strcmp with str1 > str2
   cmp = my_strcmp(GoT_str1, GoT_str2);
-  if(cmp!=1)
-  {
+  if(cmp!=1) {
     printf("Error: third test of my_strcmp failed\n");
     return -3;
   }
@@ -68,20 +64,33 @@ int main(int argc, char *argv[])
 
   int sorted_array_iter;
   printf("Sorted names:\n");
-  for(sorted_array_iter=0;sorted_array_iter<15;sorted_array_iter++)
-  {
+  for(sorted_array_iter=0;sorted_array_iter<15;sorted_array_iter++) {
     printf("\t%s\n", game_of_thrones_names[sorted_array_iter]);
   }
   printf("Verify that names have been sorted correctly\n");
   return 0;
 }
 
-int my_strcmp(char * str1, char * str2)
-{
-  return -1;
+int my_strcmp(char * str1, char * str2) {
+  while(*str1 == *str2 && *str1 != '\0') {
+    str1++;
+    str2++;
+  }
+  if (*str1 < *str2) {
+    return -1;
+  } 
+  if (*str1 > *str2) {
+    return 1;
+  }
+  return 0;
 }
 
-void sort_string_array(char ** tab, int nb_of_elements)
-{
-
+void sort_string_array(char ** tab, int nb_of_elements) {
+  for (int i = 1; i < nb_of_elements; i++) {
+    for(int k = i; k > 0 && my_strcmp(tab[k], tab[k-1]) < 0; k--) {
+      char * temp = tab[k];
+      tab[k] = tab[k-1];
+      tab[k-1] = temp;
+    }
+  }
 }

@@ -87,7 +87,7 @@ int my_strcmp(char * str1, char * str2) {
 
 void sort_string_array(char ** tab, int nb_of_elements) {
   for (int i = 1; i < nb_of_elements; i++) {
-    for(int k = i; k > 0 && my_strcmp(tab[k], tab[k-1]) < 0; k--) {
+    for(int k = i; k > 0 && my_strcmp(*(tab + k), tab[k-1]) < 0; k--) {
       char * temp = tab[k];
       tab[k] = tab[k-1];
       tab[k-1] = temp;

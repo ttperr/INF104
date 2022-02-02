@@ -19,7 +19,9 @@ int main(int argc, char *argv[]) {
 int * alloc (int val) {
   int * tab;
   // initialize elements of tab with value val
-  tab = (int *) malloc(20*sizeof(int)); 
+  tab = (int *) malloc(20*sizeof(int));
+  for (int i = 0; i < 20; i++) {
+    tab[i] = val;
   }
   return tab;
 }

@@ -2,9 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "linked-list.h"
 #include "link-types.h"
-
+#include "linked-list.h"
 
 /*************   global variables   ****************/
 

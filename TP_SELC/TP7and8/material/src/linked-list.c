@@ -8,8 +8,8 @@
 extern int number_of_students;
 
 /********************   read_file_content   ********************
-* read file and extract information to store it in array
-**************************************************************/
+ * read file and extract information to store it in array
+ **************************************************************/
 
 void read_file_content(Student_t *array, FILE *file)
 {
@@ -34,9 +34,9 @@ void read_file_content(Student_t *array, FILE *file)
 }
 
 /********************    new_link   *******************
-* Create a new link of type Link_t: the field next is initialized to NULL
-* Returns the adress of the new link.
-********************************************************/
+ * Create a new link of type Link_t: the field next is initialized to NULL
+ * Returns the adress of the new link.
+ ********************************************************/
 Link_t *new_link(Student_t student)
 {
   Link_t *link;
@@ -53,10 +53,10 @@ Link_t *new_link(Student_t student)
 }
 
 /********************    chain   *******************
-* Add a new link (new_link) at the beginning of an existing
-* linked list (beginning).
-* Returns the address of the first element of the list.
-********************************************************/
+ * Add a new link (new_link) at the beginning of an existing
+ * linked list (beginning).
+ * Returns the address of the first element of the list.
+ ********************************************************/
 Link_t *chain(Link_t *beginning, Link_t *new_link)
 {
   /* TODO: implement this function */
@@ -69,9 +69,9 @@ Link_t *chain(Link_t *beginning, Link_t *new_link)
 }
 
 /********************   display_linked_list   *******************
-* Display (using printf) the information contained in the
-* linked list.
-********************************************************/
+ * Display (using printf) the information contained in the
+ * linked list.
+ ********************************************************/
 void display_linked_list(Link_t *list)
 {
 
@@ -84,20 +84,20 @@ void display_linked_list(Link_t *list)
   while (currentElement != NULL)
   {
     printf("\nStudent n°%d : %s %s is in group %d\n", i, currentElement->student.firstname,
-           currentElement->student.lastname, currentElement->student.group);
+          currentElement->student.lastname, currentElement->student.group);
     i++;
     currentElement = currentElement->next;
   }
 }
 
 /********************   search   *******************
-* Search for a link corresponding to a student last
-* name
-* beginning: first link of the list used for searching
-* name_to_search: last name of the student to search
-* returns the firts link for which the name equals
-* name_to_search
-********************************************************/
+ * Search for a link corresponding to a student last
+ * name
+ * beginning: first link of the list used for searching
+ * name_to_search: last name of the student to search
+ * returns the firts link for which the name equals
+ * name_to_search
+ ********************************************************/
 Link_t *search(Link_t *beginning, char *name_to_search)
 {
   Link_t *found_link;
@@ -123,11 +123,11 @@ Link_t *search(Link_t *beginning, char *name_to_search)
 }
 
 /********************   insert   *******************
-* Insert a link in a linked list
-* beginning: first link of the original list
-* new_link: link to insert
-* returns the firts link of the list after insertion
-********************************************************/
+ * Insert a link in a linked list
+ * beginning: first link of the original list
+ * new_link: link to insert
+ * returns the firts link of the list after insertion
+ ********************************************************/
 Link_t *insert(Link_t *beginning, Link_t *new_link)
 {
   /* TODO: implement this function */
@@ -147,8 +147,8 @@ Link_t *insert(Link_t *beginning, Link_t *new_link)
 }
 
 /********************   sort   *******************
-* Sort the content of the linked list.
-********************************************************/
+ * Sort the content of the linked list.
+ ********************************************************/
 Link_t *sort(Link_t *beginning)
 {
   /* TODO: implement this function */
@@ -167,8 +167,8 @@ Link_t *sort(Link_t *beginning)
 }
 
 /********************   free_list   *******************
-* Free the memory used by the linked list.
-********************************************************/
+ * Free the memory used by the linked list.
+ ********************************************************/
 void free_list(Link_t *list)
 {
 

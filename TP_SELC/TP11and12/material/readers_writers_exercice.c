@@ -12,6 +12,7 @@
 /* Les deux verrous */
 sem_t * lock_for_shared_variables;
 sem_t * lock_for_readers_writers;
+sem_t * lock_against_starvation;
 
 /* System file descriptor containing le number 
  * of readers accessing the shared ressource */
@@ -56,6 +57,12 @@ int main(int argc, char *argv[]) {
     exit(1);
   }	
 	
+  lock_for_readers_writers = sem_open(LOCK_AGAINST_STARVATION_NAME, O_CREAT, 0644, initial_sem_counter);
+  if (lock_for_readers_writers == SEM_FAILED) {
+    perror("initialization of lock against starvation failed");
+    exit(1);
+  }	
+
   /* Open and initialise the file containing the number
    * of readers accessing the shared resource.
    */
@@ -116,7 +123,8 @@ void writers_function(int writer_id){
     
     /*****  Begining of the critical section for the readers/writers mechanism *****/
     /*  TO BE COMPLETED */
-
+    sem_wait(lock_against_starvation);
+    sem_wait(lock_for_readers_writers);
     
     /* get the current date */
     the_clock=time(NULL);
@@ -141,7 +149,9 @@ void writers_function(int writer_id){
     
     /*****  End of the critical section for the readers/writers mechanism *****/
     /*  TO BE COMPLETED  */
-    
+    sem_post(lock_against_starvation);
+    sem_post(lock_for_readers_writers);
+
     sleep(2+i);
   }
   
@@ -155,15 +165,21 @@ void readers_function(int reader_id) {
   time_t the_clock;
   struct tm  * the_date;
 
+  sem_wait(lock_against_starvation);
+  sem_post(lock_against_starvation);
+
   /* TO BE COMPLETED: protect shared data in is_first  */
-  
+  sem_wait(lock_for_shared_variables);
+
   if (is_first()) {
     printf("========================= Reader %d is the first one entering the critical section (i.e. accessing the shared resource) \n", reader_id);
     /*****  Begining of the critical section for the readers/writers mechanism *****/
     /*  TO BE COMPLETED */
+    sem_wait(lock_for_readers_writers);
   }
 
   /* TO BE COMPLETED  */
+  sem_post(lock_for_shared_variables);
 
   /* get the current date */
   the_clock = time(NULL);
@@ -187,19 +203,22 @@ void readers_function(int reader_id) {
   printf("========================= Reader %d about to exit the critical section -- Date :  %02d:%02d \n", reader_id,  minutes, seconds);
     
   /* TO BE COMPLETED: protect shared data in is_last  */
-    
+  sem_wait(lock_for_shared_variables);
+  
   if (is_last()) {
     printf("========================= Reader %d is last\n", reader_id);
     /*****  End of the critical section for the readers/writers mechanism *****/
     /*  TO BE COMPLETED  */
+    sem_post(lock_for_readers_writers);
   }
   
   /*  TO BE COMPLETED  */
+  sem_post(lock_for_shared_variables);
 
   exit(reader_id);
 }
 
- 
+
 /********************** is_first function ***********************/
 char is_first(){
   int number_of_readers;

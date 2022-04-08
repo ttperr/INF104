@@ -156,7 +156,6 @@ void actor_function(int actor_id){
 
     printf("************ Actor %d waits at the barrier\n", actor_id);
 
-
     sem_wait(sem_for_barrier);
 
     the_clock = time(NULL);

@@ -39,10 +39,17 @@ int main(int argc, char *argv[]) {
 
   /* Create and initialize semaphores */
   
-  /*
-   *  TO BE COMPLETED using identifiers of semaphores defined in
-   *  barrier_semaph.h
-   */
+  lock_for_shared_variables = sem_open(LOCK_FOR_SHARED_VARIABLES_NAME, O_CREAT, 0644, 1);
+  if (lock_for_shared_variables == SEM_FAILED) {
+    perror("initialization of lock for shared variables failed");
+    exit(1);
+  }
+
+  sem_for_barrier = sem_open(SEM_FOR_BARRIER_NAME, O_CREAT, 0644, 0);
+  if (sem_for_barrier == SEM_FAILED) {
+    perror("initialization of semaphore for the barrier failed");
+    exit(1);
+  }
 
   /* Open and initialize the file containing the shared information: the number
    * of actors that reached the barrier.
@@ -68,6 +75,12 @@ int main(int argc, char *argv[]) {
   /* Destruction of semaphores */
 
   /* TO BE COMPLETED  */
+
+  sem_close(lock_for_shared_variables);
+  sem_unlink(LOCK_FOR_SHARED_VARIABLES_NAME);
+  
+  sem_close(sem_for_barrier);
+  sem_unlink(SEM_FOR_BARRIER_NAME);
 
   printf("main - %s : this is the end ... \n", argv[0]);
   exit(0);
@@ -96,6 +109,8 @@ void actor_function(int actor_id){
 
   printf("========================= Actor %d in SC1\n", actor_id);
 
+  sem_wait(lock_for_shared_variables);
+
   /* Increment the number of actors that reached the barrier */
   fseek(actors_reached_file, 0, SEEK_SET);
   ret_scan = fscanf(actors_reached_file, "%d", &actors_reached);
@@ -122,6 +137,7 @@ void actor_function(int actor_id){
 
       /*  TO BE COMPLETED */
 
+      sem_post(sem_for_barrier);
 
       /* Decrement the number of actors at the barrier */
       fseek(actors_reached_file, 0, SEEK_SET);
@@ -136,6 +152,8 @@ void actor_function(int actor_id){
 
     /*  TO BE COMPLETED */
 
+    sem_post(lock_for_shared_variables);
+
     ;
   }
   else {
@@ -145,8 +163,11 @@ void actor_function(int actor_id){
 
     /*  TO BE COMPLETED */
 
+    sem_post(lock_for_shared_variables);
+
     printf("************ Actor %d waits at the barrier\n", actor_id);
 
+    sem_wait(sem_for_barrier);
 
     /*  TO BE COMPLETED */
 

@@ -8,6 +8,7 @@ its 4 children processes via a pipe and signals
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <string.h>
 
 #define CLILDREN_NB 4
 
@@ -32,6 +33,9 @@ int main (int argc, char *argv[]){
     /*  TO BE COMPLETED: create children and execute child_function
      *  in each of them.
      */
+    child_pid = fork();
+    if(child_pid==0)
+      child_function();
   }
   parent_function();
   return (0);
@@ -59,6 +63,15 @@ void parent_function(void)
      *   received_msg; note that the end of the received
      *   message can be detected using the NULL character ('\0').
      */
+    char received_char, char_iter=0;
+    do
+    {
+      read (the_pipe[0], &received_char, 1);
+      received_msg[char_iter] = received_char;
+      char_iter++;
+    }
+    while(received_char!='\0');
+    received_msg[char_iter] = received_char;
 
     printf("Executing pid %d, message received: %s\n", (int)getpid(), received_msg);
 
@@ -67,6 +80,7 @@ void parent_function(void)
     /* TO BE COMPLETED send SIGUSR1 to the child using the PID that was just received
      * from the pipe (see line of code above).
      */
+    kill(received_pid, SIGUSR1);
 
     /*	waiting for the end of the child process   */
     child_pid = wait(&child_exit_state);
@@ -100,6 +114,8 @@ void child_function(void)
    *   in the pipe. Use strlen(msg) to perform this. Warning :
    *   make sure the NULL character ('\0') is present at the end of the text in the pipe
    */
+
+  write(the_pipe[1], msg, strlen(msg)+1);
 
   printf("Message sent to the parent process : %s\n", msg);
   close(the_pipe[1]);

@@ -51,7 +51,7 @@ int main (int argc, char *argv[]){
 
   while(1){
     /* TO BE COMPLETED: take the first lock */
-
+    lockf_ret = lockf(file_1, F_LOCK, 0);
     if (lockf_ret != 0)  perror ("lockf file_1");
     printf ("Pid %d : entered critical section 1 (%s), lockf_ret=%d\n", (int)getpid(), argv[1], lockf_ret );
 
@@ -59,10 +59,23 @@ int main (int argc, char *argv[]){
     sleep(random() %4);
 
     /* TO BE COMPLETED: take the second lock */
-
+    lockf_ret = lockf(file_2, F_LOCK, 0);
     /* TO BE COMPLETED: If a deadlock is detected, release the first lock
        execute sleep, increment deadlock_nb, and try to
        take it again by restarting the loop */
+
+    if (lockf_ret != 0)  {
+      perror ("lockf file_2");
+      if (errno == EDEADLK){
+        printf ("Pid %d : ulock %s (deadlock_nb=%d)\n", (int)getpid(),  argv[1], deadlock_nb);
+        deadlock_nb++;
+        /** Release the first lock */
+        lockf_ret = lockf(file_1, F_ULOCK, 0);
+        sleep(deadlock_nb);
+        /* continue the loop */
+        continue;
+      }
+    }
 
     correct_iteration_nb++;
     printf ("Pid %d : entered critical section 2 (%s), lockf_ret=%d, correct_iteration_nb =%d\n",
@@ -96,11 +109,13 @@ int main (int argc, char *argv[]){
 
     lseek(file_2, 0, SEEK_SET);
     /* TO BE COMPLETED: release the second lock */
+    lockf_ret = lockf(file_2, F_ULOCK, 0);
     if (lockf_ret != 0)  perror ("ulockf file_2");
     printf ("Pid %d : exit critical section 2 (%s), lockf_ret=%d\n", (int)getpid(), argv[2], lockf_ret );
 
     lseek(file_1, 0, SEEK_SET);
     /* TO BE COMPLETED: release the first lock */
+    lockf_ret = lockf(file_1, F_ULOCK, 0);
     if (lockf_ret != 0)  perror ("ulockf file_1");
     printf ("Pid %d : exit critical section 1 (%s), lockf_ret=%d\n", (int)getpid(), argv[1], lockf_ret );
 

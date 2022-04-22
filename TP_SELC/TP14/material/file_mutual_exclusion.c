@@ -13,16 +13,21 @@ between processes accessing a shared file.
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <setjmp.h>
+#include <signal.h>
 
-int open_ret;
+void on_alrm(int sig_nb);
+jmp_buf ctxt;
+
+int open_ret, lock_ret;
 
 int main (int argc, char *argv[])
 {
-  int lock_ret, write_ret ;
+  int write_ret ;
   char taped_word[256];
-  if (argc != 2)
+  if (argc != 3)
   {
-    printf("Wrong usage : %s file_name ! \n", argv[0]);
+    printf("Wrong usage : %s file_name time_out! \n", argv[0]);
     exit(2);
   }
   /*-----------------------------------------------------
@@ -32,6 +37,8 @@ int main (int argc, char *argv[])
   as an argument to the program.
   ----------------------------------------------------- */
 
+  int timeout = atoi(argv[2]);
+
   if ((open_ret = open (argv[1], O_RDWR)) == -1)
   {
     perror ("open 2");
@@ -40,10 +47,14 @@ int main (int argc, char *argv[])
 
   while (1)
   {
-    /*  TO BE COMPLETED: implement a mutual exclusion  */
-
+    sigsetjmp(ctxt, 1);
+    /* Avoid starvation */
+    sleep(1);
+    /*  Implement a mutual exclusion  */
+    lock_ret = lockf(open_ret, F_LOCK, 0);
     printf ("Pid %d : entered the critical section\n", (int)getpid() );
-
+    signal(SIGALRM, on_alrm);
+    alarm(timeout);
 
     /*----------------------------------------------
     Begining of the critical section
@@ -64,13 +75,27 @@ int main (int argc, char *argv[])
     }
 
     /*----------------------------------------------
-    TO BE COMPLETED: end of the critical section
+    End of the critical section
     ----------------------------------------------*/
+    lseek(open_ret, 0, SEEK_SET);
+    /* Release the second lock */
+    lock_ret = lockf(open_ret, F_ULOCK, 0);
+
     printf ("Pid %d : arret temporaire d'utilisation de %s\n",
     (int)getpid(), argv[1]);
 
-    /*  TO BE COMPLETED to avoid starvation  */
+    /*  To avoid starvation  */
+    sleep(1);
 
     printf ("Finished critical section, lock returned =  %d\n", lock_ret);
   }  /* fin de la boucle while */
+}
+
+void on_alrm(int sig_nb)
+{
+  lseek(open_ret, 0, SEEK_SET);
+  /* Release the second lock */
+  lock_ret = lockf(open_ret, F_ULOCK, 0);
+  printf("Jump: re-execute before critical section\n");
+  siglongjmp(ctxt, sig_nb);
 }

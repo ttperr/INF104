@@ -18,11 +18,11 @@ between processes accessing a shared file.
 void on_alrm(int sig_nb);
 jmp_buf ctxt;
 
-int open_ret;
+int open_ret, lock_ret;
 
 int main (int argc, char *argv[])
 {
-  int lock_ret, write_ret ;
+  int write_ret ;
   char taped_word[256];
   if (argc != 3)
   {

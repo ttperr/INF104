@@ -37,15 +37,22 @@ int main(int argc, char *argv[]) {
    *  in order to recover from memory access errors: this is the
    *  recovery point */
 
+  	signal(SIGBUS,on_memory_access_error);
+	signal(SIGSEGV,on_memory_access_error);
+
 	/* TO BE COMPLETED: set here a recovery point to re-execute the program
   * from here in case of error */
-
+ 	
+	sig_set_jmp_ret = sigsetjmp(ctxt, 1);
 	printf ("sigsetjmp, returned value: %ld\n", sig_set_jmp_ret);
 
   /* TO BE COMPLETED: if next instructions are executed after
    * recovering from an erroneous memory access, display a
    * warning message: "an error just occured, make sure you respect the
    * usage condition of this program" */
+  	if(sig_set_jmp_ret !=  0)
+		printf ("san error just occured, make sure you respect the usage condition of this program\n\n");
+
 
   /* Ask a user to give an index for reading the content of the
    * array: large enough values, or negative values should
@@ -65,8 +72,9 @@ int main(int argc, char *argv[]) {
 /**************************************/
 void  on_memory_access_error (int Num_Sig ){
 
-	printf("-- on_memory_access_error -- Pid %d received signal %d\n", (int)getpid(), Num_Sig);
+	printf("\n-- on_memory_access_error -- Pid %d received signal %d\n", (int)getpid(), Num_Sig);
 	printf("-- on_memory_access_error -- Error accessing adress: %p, array index = %ld (hexa : %lx)\n", &array[array_iterator], array_iterator, array_iterator);
 
 	// TO BE COMPLETED: jump to the recovery point now
+	siglongjmp(ctxt, Num_Sig);
 }
